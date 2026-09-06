@@ -1,0 +1,293 @@
+diff -ruN pandas_parent/doc/source/whatsnew/v3.1.0.rst pandas/doc/source/whatsnew/v3.1.0.rst
+--- pandas_parent/doc/source/whatsnew/v3.1.0.rst	2026-09-06 09:51:50.322434204 +0530
++++ pandas/doc/source/whatsnew/v3.1.0.rst	2026-09-06 09:46:39.690830025 +0530
+@@ -831,6 +831,8 @@
+ - Bug in :func:`eval` and :meth:`DataFrame.eval` where passing a :class:`Series` or :class:`DataFrame` as ``expr`` silently parsed its (possibly truncated) repr instead of raising, producing a confusing error (:issue:`16289`)
+ - Bug in :meth:`DataFrame.eval` where a duplicate column name was resolved to a single column (yielding a :class:`Series`), inconsistent with :func:`pandas.eval` using ``resolvers=(df,)`` and with :meth:`DataFrame.__getitem__`, which include every column with that label (:issue:`65588`)
+ - Bug in :meth:`DataFrame.from_dict` where passing a dict of only scalar values raised a :class:`ValueError` telling users to pass an ``index``, even though :meth:`DataFrame.from_dict` has no ``index`` parameter; the message now points to ``orient='index'`` or the :class:`DataFrame` constructor (:issue:`25515`)
++- Bug in :meth:`DataFrame.replace` and :meth:`Series.replace` with ``inplace=True`` and a list-like or dict ``to_replace`` where the result stopped being copy-on-write protected, so a view taken afterwards shared memory with it and writing to either one silently modified the other (:issue:`58966`)
++- Bug in :meth:`DataFrame.replace` raising ``IndexError`` instead of replacing when ``to_replace`` was list-like or dict-like, the replacement changed a column's dtype, and two or more other columns were left unchanged (:issue:`61972`)
+ - Bug in :meth:`DataFrame.select_dtypes` with an :class:`~pandas.api.extensions.ExtensionDtype` subclass such as :class:`ArrowDtype` or :class:`DatetimeTZDtype` raising ``TypeError``, emitting a spurious ``UserWarning``, or selecting the wrong columns; passing such a class now selects every column whose dtype is an instance of that class (:issue:`65366`)
+ - Bug in :meth:`Series.transform` and :meth:`DataFrame.transform` where passing a list of duplicate function names did not raise :class:`errors.SpecificationError` (:issue:`54929`)
+ - Bug in ``register_option`` where registering an option whose name was a prefix of an existing option (e.g. ``"a.b"`` when ``"a.b.c"`` was already registered) silently overwrote the existing option's namespace instead of raising (:issue:`29242`)
+diff -ruN pandas_parent/.git/HEAD pandas/.git/HEAD
+--- pandas_parent/.git/HEAD	2026-09-06 09:51:50.498434616 +0530
++++ pandas/.git/HEAD	2026-09-06 09:46:39.904830338 +0530
+@@ -1 +1 @@
+-ea7ceaae5d529cc8043cf3eb55a53ba42f1b87ed
++c7883d370e04985fe849f664debf7f50f8089c23
+Binary files pandas_parent/.git/index and pandas/.git/index differ
+diff -ruN pandas_parent/.git/logs/HEAD pandas/.git/logs/HEAD
+--- pandas_parent/.git/logs/HEAD	2026-09-06 09:51:50.498434616 +0530
++++ pandas/.git/logs/HEAD	2026-09-06 09:46:39.905830340 +0530
+@@ -1,2 +1,2 @@
+-0000000000000000000000000000000000000000 52374579d92bdb45a7ee5e0b7b57463071a31f7e Mukesh Ranjan <mukesh.ranjan@tutamail.com> 1788668480 +0530	clone: from github.com:pandas-dev/pandas.git
+-52374579d92bdb45a7ee5e0b7b57463071a31f7e ea7ceaae5d529cc8043cf3eb55a53ba42f1b87ed Mukesh Ranjan <mukesh.ranjan@tutamail.com> 1788668510 +0530	checkout: moving from main to ea7ceaae5d529cc8043cf3eb55a53ba42f1b87ed
++0000000000000000000000000000000000000000 52374579d92bdb45a7ee5e0b7b57463071a31f7e Mukesh Ranjan <mukesh.ranjan@tutamail.com> 1788666571 +0530	clone: from github.com:pandas-dev/pandas.git
++52374579d92bdb45a7ee5e0b7b57463071a31f7e c7883d370e04985fe849f664debf7f50f8089c23 Mukesh Ranjan <mukesh.ranjan@tutamail.com> 1788668199 +0530	checkout: moving from main to c7883d370e
+diff -ruN pandas_parent/.git/logs/refs/heads/main pandas/.git/logs/refs/heads/main
+--- pandas_parent/.git/logs/refs/heads/main	2026-09-06 09:51:20.833366139 +0530
++++ pandas/.git/logs/refs/heads/main	2026-09-06 09:19:31.268753203 +0530
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 52374579d92bdb45a7ee5e0b7b57463071a31f7e Mukesh Ranjan <mukesh.ranjan@tutamail.com> 1788668480 +0530	clone: from github.com:pandas-dev/pandas.git
++0000000000000000000000000000000000000000 52374579d92bdb45a7ee5e0b7b57463071a31f7e Mukesh Ranjan <mukesh.ranjan@tutamail.com> 1788666571 +0530	clone: from github.com:pandas-dev/pandas.git
+diff -ruN pandas_parent/.git/logs/refs/remotes/origin/HEAD pandas/.git/logs/refs/remotes/origin/HEAD
+--- pandas_parent/.git/logs/refs/remotes/origin/HEAD	2026-09-06 09:51:20.831366134 +0530
++++ pandas/.git/logs/refs/remotes/origin/HEAD	2026-09-06 09:19:31.266753189 +0530
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 52374579d92bdb45a7ee5e0b7b57463071a31f7e Mukesh Ranjan <mukesh.ranjan@tutamail.com> 1788668480 +0530	clone: from github.com:pandas-dev/pandas.git
++0000000000000000000000000000000000000000 52374579d92bdb45a7ee5e0b7b57463071a31f7e Mukesh Ranjan <mukesh.ranjan@tutamail.com> 1788666571 +0530	clone: from github.com:pandas-dev/pandas.git
+Binary files pandas_parent/.git/objects/pack/pack-47f6a47a5329a0782e92922f953f9bdcaeb27924.idx and pandas/.git/objects/pack/pack-47f6a47a5329a0782e92922f953f9bdcaeb27924.idx differ
+Binary files pandas_parent/.git/objects/pack/pack-47f6a47a5329a0782e92922f953f9bdcaeb27924.pack and pandas/.git/objects/pack/pack-47f6a47a5329a0782e92922f953f9bdcaeb27924.pack differ
+Binary files pandas_parent/.git/objects/pack/pack-47f6a47a5329a0782e92922f953f9bdcaeb27924.rev and pandas/.git/objects/pack/pack-47f6a47a5329a0782e92922f953f9bdcaeb27924.rev differ
+Binary files pandas_parent/.git/objects/pack/pack-ef4a3c0d7c5054cbb78ea4ed0ab8d56cec03f12f.idx and pandas/.git/objects/pack/pack-ef4a3c0d7c5054cbb78ea4ed0ab8d56cec03f12f.idx differ
+Binary files pandas_parent/.git/objects/pack/pack-ef4a3c0d7c5054cbb78ea4ed0ab8d56cec03f12f.pack and pandas/.git/objects/pack/pack-ef4a3c0d7c5054cbb78ea4ed0ab8d56cec03f12f.pack differ
+Binary files pandas_parent/.git/objects/pack/pack-ef4a3c0d7c5054cbb78ea4ed0ab8d56cec03f12f.rev and pandas/.git/objects/pack/pack-ef4a3c0d7c5054cbb78ea4ed0ab8d56cec03f12f.rev differ
+diff -ruN pandas_parent/pandas/core/internals/blocks.py pandas/pandas/core/internals/blocks.py
+--- pandas_parent/pandas/core/internals/blocks.py	2026-09-06 09:51:50.355434282 +0530
++++ pandas/pandas/core/internals/blocks.py	2026-09-06 09:46:39.729830082 +0530
+@@ -884,24 +884,51 @@
+                 )
+ 
+                 if i != src_len:
+-                    # This is ugly, but we have to get rid of intermediate refs. We
+-                    # can simply clear the referenced_blocks if we already copied,
+-                    # otherwise we have to remove ourselves
++                    # This is ugly, but we have to get rid of intermediate refs.
+                     self_blk_ids = {
+-                        id(b()): i for i, b in enumerate(self.refs.referenced_blocks)
++                        id(ref()): idx
++                        for idx, ref in enumerate(self.refs.referenced_blocks)
+                     }
+-                    for b in result:
+-                        if b.refs is self.refs:
+-                            # We are still sharing memory with self
+-                            if id(b) in self_blk_ids and b is not self:
+-                                # Remove ourselves from the refs; we are temporary
+-                                self.refs.referenced_blocks.pop(self_blk_ids[id(b)])
+-                        else:
+-                            # We have already copied, so we can clear the refs to avoid
+-                            # future copies
+-                            b.refs.referenced_blocks.clear()
++                    # Blocks still sharing memory with self are temporary, so drop
++                    #  them from self's refs. Pop highest index first: popping in
++                    #  ascending order shifts every later index down, so with two or
++                    #  more of them the later pops hit the wrong entry or ran off the
++                    #  end (GH#61972).
++                    drop = {
++                        self_blk_ids[id(res_blk)]
++                        for res_blk in result
++                        if res_blk.refs is self.refs
++                        and id(res_blk) in self_blk_ids
++                        and res_blk is not self
++                    }
++                    for idx in sorted(drop, reverse=True):
++                        self.refs.referenced_blocks.pop(idx)
++                    # Note: blocks whose refs are not self.refs are left alone. Those
++                    #  refs still track every live block sharing that data, which may
++                    #  include sibling sub-blocks from _split on an intermediate
++                    #  block, and always include the block itself. Emptying them would
++                    #  leave those blocks untracked, so writes through a later view
++                    #  would not trigger copy-on-write (GH#58966).
+                 new_rb.extend(result)
+             rb = new_rb
++
++        # The drop above assumes every block it removes is a short-lived intermediate,
++        #  but a block can survive to the end untouched (a later pair whose mask is
++        #  empty hands it straight back). Re-register whatever we are actually
++        #  returning, otherwise it stays invisible to has_reference() and writes
++        #  through a later view skip copy-on-write (GH#58966).
++        # Blocks split off the same parent share one refs, so cache the ids per refs
++        #  rather than rescanning the list for each of them.
++        registered: dict[int, set[int]] = {}
++        for ret_blk in rb:
++            refs = ret_blk.refs
++            ids = registered.get(id(refs))
++            if ids is None:
++                ids = {id(ref()) for ref in refs.referenced_blocks}
++                registered[id(refs)] = ids
++            if id(ret_blk) not in ids:
++                refs.add_reference(ret_blk)
++                ids.add(id(ret_blk))
+         return rb
+ 
+     @final
+diff -ruN pandas_parent/pandas/tests/copy_view/test_replace.py pandas/pandas/tests/copy_view/test_replace.py
+--- pandas_parent/pandas/tests/copy_view/test_replace.py	2026-09-06 09:51:50.382434345 +0530
++++ pandas/pandas/tests/copy_view/test_replace.py	2026-09-06 09:46:39.762830131 +0530
+@@ -4,6 +4,8 @@
+ from pandas import (
+     Categorical,
+     DataFrame,
++    Series,
++    Timestamp,
+ )
+ import pandas._testing as tm
+ from pandas.tests.copy_view.util import get_array
+@@ -369,3 +371,141 @@
+     df.replace([200, 3], [10, 11], inplace=True)
+     assert not np.shares_memory(get_array(df, "a"), arr)
+     tm.assert_frame_equal(view, df_orig)
++
++
++@pytest.mark.parametrize(
++    "to_replace, value",
++    [
++        # matching pair before a no-op pair
++        ([2, 200], [20, 10]),
++        # every pair matches
++        ([2, 3], [20, 30]),
++        # more than two pairs
++        ([2, 200, 201], [20, 10, 10]),
++    ],
++)
++def test_replace_listlike_inplace_keeps_tracking_copies(to_replace, value):
++    # GH#58966 replace_list dropped the block's self-reference once it had
++    #  copied, so views taken afterwards were no longer copy-on-write protected
++    df = DataFrame({"a": [1, 2, 3], "b": [1, 2, 3]})
++    view = df[:]
++    df.replace(to_replace, value, inplace=True)
++    # the copy triggered by ``view`` must not have leaked the original values
++    tm.assert_frame_equal(view, DataFrame({"a": [1, 2, 3], "b": [1, 2, 3]}))
++
++    df_orig = df.copy()
++    view2 = df[:]
++    df.iloc[0, 0] = 999
++    assert not np.shares_memory(get_array(df, "a"), get_array(view2, "a"))
++    tm.assert_frame_equal(view2, df_orig)
++
++
++def test_replace_dictlike_inplace_keeps_tracking_copies():
++    # GH#58966
++    df = DataFrame({"a": [1, 2, 3], "b": [1, 2, 3]})
++    view = df[:]
++    df.replace({2: 20, 3: 30}, inplace=True)
++    tm.assert_frame_equal(view, DataFrame({"a": [1, 2, 3], "b": [1, 2, 3]}))
++
++    df_orig = df.copy()
++    view2 = df[:]
++    df.iloc[0, 0] = 999
++    assert not np.shares_memory(get_array(df, "a"), get_array(view2, "a"))
++    tm.assert_frame_equal(view2, df_orig)
++
++
++def test_replace_object_inplace_keeps_tracking_copies():
++    # GH#58966
++    ser = Series(["a", "b", "c"], dtype=object)
++    view = ser[:]
++    ser.replace(["b", "z"], ["B", "Z"], inplace=True)
++    tm.assert_series_equal(view, Series(["a", "b", "c"], dtype=object))
++
++    ser_orig = ser.copy()
++    view2 = ser[:]
++    ser.iloc[0] = "x"
++    assert not np.shares_memory(get_array(ser), get_array(view2))
++    tm.assert_series_equal(view2, ser_orig)
++
++
++def test_replace_listlike_inplace_upcast_keeps_tracking_copies():
++    # GH#58966 no pre-existing reference is needed: the upcast to object mints
++    #  fresh refs, which were then emptied
++    ser = Series([1, 2, 3])
++    ser.replace([2, 200], ["x", "y"], inplace=True)
++
++    ser_orig = ser.copy()
++    view = ser[:]
++    ser.iloc[0] = "Q"
++    assert not np.shares_memory(get_array(ser), get_array(view))
++    tm.assert_series_equal(view, ser_orig)
++
++
++def test_replace_regex_inplace_keeps_tracking_copies():
++    # GH#58966
++    ser = Series(["ab", "bc", "cd"], dtype=object)
++    view = ser[:]
++    ser.replace(["^a", "^z"], ["A", "Z"], regex=True, inplace=True)
++    tm.assert_series_equal(view, Series(["ab", "bc", "cd"], dtype=object))
++
++    ser_orig = ser.copy()
++    view2 = ser[:]
++    ser.iloc[0] = "Q"
++    assert not np.shares_memory(get_array(ser), get_array(view2))
++    tm.assert_series_equal(view2, ser_orig)
++
++
++@pytest.mark.parametrize("dtype", ["Int64", "datetime64[ns]"])
++def test_replace_listlike_inplace_ea_keeps_tracking_copies(dtype):
++    # GH#58966 EABackedBlock, not just NumpyBlock
++    to_replace = [2, 200]
++    value = [20, 10]
++    new_val = 999
++    if dtype == "datetime64[ns]":
++        to_replace = [Timestamp(val) for val in to_replace]
++        value = [Timestamp(val) for val in value]
++        new_val = Timestamp(new_val)
++
++    ser = Series([1, 2, 3]).astype(dtype)
++    orig = ser.copy()
++    view = ser[:]
++    ser.replace(to_replace, value, inplace=True)
++    tm.assert_series_equal(view, orig)
++
++    ser_orig = ser.copy()
++    view2 = ser[:]
++    ser.iloc[0] = new_val
++    assert not np.shares_memory(get_array(ser), get_array(view2))
++    tm.assert_series_equal(view2, ser_orig)
++
++
++@pytest.mark.parametrize(
++    "to_replace, value",
++    [
++        ([1, 2], ["s0", "s1"]),
++        ([1, 2, 3], ["s0", "s1", "s2"]),
++    ],
++)
++def test_replace_listlike_inplace_split_keeps_tracking_copies(to_replace, value):
++    # GH#58966 upcasting one column of a multi-column block splits it; the
++    #  untouched sibling survives the pair loop and must stay registered
++    df = DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
++    df.replace(to_replace, value, inplace=True)
++
++    df_orig = df.copy()
++    view = df[:]
++    df.iloc[0, 1] = 999
++    assert not np.shares_memory(get_array(df, "b"), get_array(view, "b"))
++    tm.assert_frame_equal(view, df_orig)
++
++
++def test_replace_dictlike_inplace_split_keeps_tracking_copies():
++    # GH#58966
++    df = DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
++    df.replace({1: "s0", 2: "s1"}, inplace=True)
++
++    df_orig = df.copy()
++    view = df[:]
++    df.iloc[0, 1] = 999
++    assert not np.shares_memory(get_array(df, "b"), get_array(view, "b"))
++    tm.assert_frame_equal(view, df_orig)
+diff -ruN pandas_parent/pandas/tests/frame/methods/test_replace.py pandas/pandas/tests/frame/methods/test_replace.py
+--- pandas_parent/pandas/tests/frame/methods/test_replace.py	2026-09-06 09:51:50.393434371 +0530
++++ pandas/pandas/tests/frame/methods/test_replace.py	2026-09-06 09:46:39.774830148 +0530
+@@ -1670,3 +1670,21 @@
+             assert len(df._mgr.blocks) == 2
+         else:
+             assert len(df._mgr.blocks) == 1
++
++
++@pytest.mark.parametrize(
++    "replace_kwargs",
++    [
++        {"to_replace": {1: "x", 99: "y"}},
++        {"to_replace": [1, 99], "value": ["x", "y"]},
++        {"to_replace": [1, 99, 98], "value": ["x", "y", "z"]},
++    ],
++)
++def test_replace_list_multiple_unchanged_columns(replace_kwargs):
++    # GH#61972 dropping the temporary blocks from the refs popped by stale
++    #  indices, so two or more unchanged columns raised IndexError
++    df = DataFrame({"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]})
++    result = df.replace(**replace_kwargs)
++
++    expected = DataFrame({"a": ["x", 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]})
++    tm.assert_frame_equal(result, expected)
