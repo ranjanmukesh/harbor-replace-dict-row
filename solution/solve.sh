@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-cd /app/pandas/pandas_parent
+cd /app/pandas
 
 patch -p1 -f -N -i /solution/folder.patch
 
