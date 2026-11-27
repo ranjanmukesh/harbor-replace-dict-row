@@ -61,5 +61,4 @@ The verifier writes a reward to `/logs/verifier/reward.txt` (1 = pass, 0 = fail)
 ## Upstream reference
 
 - PR: https://github.com/pandas-dev/pandas/pull/66712  
-- Issues: GH#58966 (CoW), GH#61972 (IndexError)
 
