@@ -1,11 +1,4 @@
-# harbor-replace-dict-row
-
-Harbor-format coding-agent task that reproduces and scores a fix for a Copy-on-Write (CoW) regression in pandas `Series.replace` / `DataFrame.replace`.
-
-Inspired by [pandas-dev/pandas#66712](https://github.com/pandas-dev/pandas/pull/66712) (merged 10 Aug 2026), which fixed:
-
-- **GH#58966** – After a list/list-like or dict-style `replace` (especially `inplace=True`), later views could still share mutable memory with the replaced object. Mutating one silently changed the other, violating CoW.
-- **GH#61972** – Some multi-column list/dict replaces raised `IndexError: pop index out of range` instead of completing.
+Harbor-format coding-agent task that challenges coding agent to fix a Copy-on-Write (CoW) regression in pandas `Series.replace` / `DataFrame.replace`.
 
 ## What the agent must do
 
